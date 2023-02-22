@@ -1,0 +1,8 @@
+"filename", "language", "JavaScript", "Markdown", "JSON", "comment", "blank", "total"
+"c:\Users\stelm\OneDrive\Desktop\Maistas_Bakalaurinis\Maistas-BE\README.md", "Markdown", 0, 3, 0, 0, 1, 4
+"c:\Users\stelm\OneDrive\Desktop\Maistas_Bakalaurinis\Maistas-BE\database\connect.js", "JavaScript", 16, 0, 0, 0, 4, 20
+"c:\Users\stelm\OneDrive\Desktop\Maistas_Bakalaurinis\Maistas-BE\models\User.model.js", "JavaScript", 37, 0, 0, 0, 4, 41
+"c:\Users\stelm\OneDrive\Desktop\Maistas_Bakalaurinis\Maistas-BE\package.json", "JSON", 0, 0, 29, 0, 1, 30
+"c:\Users\stelm\OneDrive\Desktop\Maistas_Bakalaurinis\Maistas-BE\routes\authRoutes.js", "JavaScript", 54, 0, 0, 1, 13, 68
+"c:\Users\stelm\OneDrive\Desktop\Maistas_Bakalaurinis\Maistas-BE\server.js", "JavaScript", 12, 0, 0, 0, 3, 15
+"Total", "-", 119, 3, 29, 1, 26, 178

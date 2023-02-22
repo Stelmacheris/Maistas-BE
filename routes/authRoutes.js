@@ -2,6 +2,7 @@ const User = require("../models/User.model");
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 router.post("/register", function (req, res) {
   const { username, email, password, address, city } = req.body;
   const created_at = new Date();
@@ -36,7 +37,10 @@ router.post("/register", function (req, res) {
 
         User.create(newUser, function (err, userId) {
           if (err) return res.status(500).json({ error: err });
-          res.status(201).json({ message: "User created", userId });
+
+          User.findById(userId, (err, user) => {
+            res.status(201).json({ id: user.id });
+          });
         });
       });
     }
@@ -58,10 +62,38 @@ router.post("/login", function (req, res) {
 
       if (!isMatch)
         return res.status(404).json({ error: "Invalid credentials1" });
-
-      res.json({ message: "Logged in successfully", id: user.id });
+      const token = jwt.sign(
+        { id: user.id, type: user.type },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "24h",
+        }
+      );
+      res.status(200).json({ id: user.id, token });
     });
   });
+});
+
+router.put("/edit-profile", (req, res) => {
+  const newUser = req.body;
+
+  User.findOne(
+    { email: newUser.email, username: newUser.username },
+    function (err, user) {
+      if (err) return res.status(500).json({ error: err });
+
+      if (user) {
+        // Either username or email is already taken
+        return res
+          .status(409)
+          .json({ error: "Username or email already taken" });
+      } else {
+        User.update(newUser.id, newUser, (err, result) => {
+          res.status(200).json({ id: newUser.id });
+        });
+      }
+    }
+  );
 });
 
 module.exports = router;
