@@ -3,7 +3,6 @@ const app = require("../server");
 const User = require("../models/User.model");
 const mysql = require("mysql");
 const connection = require("../database/connect");
-const { expect } = require("chai");
 const pool = mysql.createPool({
   user: process.env.USER,
   password: process.env.PASSWORD,
@@ -28,9 +27,11 @@ describe("POST /register", () => {
       created_at: new Date(),
     };
     const response = await request(app).post("/register").send(newUser);
-    //expect(response.statusCode).toBe(201);
+    expect(response.statusCode).toBe(201);
+    let id;
     User.findById(response._body.id, (err, user) => {
-      expect(user).to.eventually.toBeTruthy();
+      expect(user).toBeTruthy();
+      id = user.id;
     });
   });
 });
