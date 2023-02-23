@@ -3,9 +3,23 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const verify = require("../verify/verify");
+const validator = require("validator");
+const passwordValidator = require("password-validator");
+
 router.post("/register", function (req, res) {
   const { username, email, password, address, city } = req.body;
   const created_at = new Date();
+  const schema = new passwordValidator();
+  schema.is().min(6).is().max(16).has().uppercase().has().lowercase();
+
+  if (!schema.validate(password)) {
+    return res.status(400).json({ message: "Invalid password" });
+  }
+
+  if (!validator.isEmail(email)) {
+    return res.status(400).json({ mesage: "Invalid email" });
+  }
 
   User.findOne(
     { $or: [{ username: username }, { email: email }] },

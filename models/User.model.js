@@ -48,6 +48,22 @@ const User = {
     });
   },
 
+  findByEmail: function (email, callback) {
+    db.query(
+      "SELECT * FROM user WHERE email = ?",
+      [email],
+      function (err, results) {
+        if (err) return callback(err, null);
+        if (results.length > 0) {
+          const user = results[0];
+          return callback(null, user);
+        } else {
+          return callback(null, null);
+        }
+      }
+    );
+  },
+
   update: function (id, newInfo, callback) {
     // get the user's existing information
     db.query("SELECT * FROM user WHERE id = ?", [id], function (err, results) {
@@ -84,6 +100,13 @@ const User = {
           callback(null, result);
         }
       );
+    });
+  },
+
+  delete: function (id, callback) {
+    db.query("DELETE FROM user WHERE id = ?", [id], function (err, result) {
+      if (err) return callback(err, null);
+      callback(null, result);
     });
   },
 };
