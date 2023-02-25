@@ -3,6 +3,7 @@ const app = require("../server");
 const User = require("../models/User.model");
 const mysql = require("mysql");
 const connection = require("../database/connect");
+const bcrypt = require("bcryptjs");
 const pool = mysql.createPool({
   user: process.env.USER,
   password: process.env.PASSWORD,
@@ -11,11 +12,15 @@ const pool = mysql.createPool({
 });
 
 describe("POST /register", () => {
+  let userId;
   afterAll((done) => {
-    app.close();
-    pool.end();
-    connection.end();
-    done();
+    User.delete(userId, (err, result) => {
+      if (err) throw err;
+      app.close();
+      pool.end();
+      connection.end();
+      done();
+    });
   });
   test("successfully registers user", async () => {
     const newUser = {
@@ -28,37 +33,51 @@ describe("POST /register", () => {
     };
     const response = await request(app).post("/register").send(newUser);
     expect(response.statusCode).toBe(201);
-    let id;
-    User.findById(response._body.id, (err, user) => {
+    userId = response.body.id;
+    User.findById(response.body.id, (err, user) => {
       expect(user).toBeTruthy();
-      id = user.id;
     });
   });
+
+  test("returns error for invalid email address", async () => {
+    const newUser = {
+      username: "testuser",
+      email: "invalidemail",
+      password: "testpasswWord",
+      address: "123 Main St",
+      city: "Anytown",
+      created_at: new Date(),
+    };
+    const response = await request(app).post("/register").send(newUser);
+    expect(response.statusCode).toBe(400);
+    expect(response.body.mesage).toBe("Invalid email");
+  });
+
+  test("returns error for missing required fields", async () => {
+    const newUser = {
+      username: "testuser",
+      password: "testpasswWord",
+      address: "123 Main St",
+      city: "Anytown",
+      created_at: new Date(),
+    };
+    const response = await request(app).post("/register").send(newUser);
+    expect(response.statusCode).toBe(500);
+  });
+
+  test("returns error for weak password", async () => {
+    const newUser = {
+      username: "testuser",
+      email: "testuser2@test.com",
+      password: "weak",
+      address: "123 Main St",
+      city: "Anytown",
+      created_at: new Date(),
+    };
+    const response = await request(app).post("/register").send(newUser);
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe(
+      "Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter."
+    );
+  });
 });
-
-// describe("POST /register", () => {
-//   afterAll((done) => {
-//     app.close();
-//     pool.end();
-//     connection.end();
-//     done();
-//   });
-
-//   test("Duplicate username or email", async () => {
-//     const res = await request(app).post("/register").send({
-//       username: "testuser",
-//       email: "testuser@example.com",
-//       password: "testpassword",
-//       address: "456 Main St",
-//       city: "Testville",
-//     });
-//     expect(res.statusCode).toBe(409);
-//     expect(res.body.error).toBe("Username or email already taken");
-//     expect(res.body.takenFields).toEqual(expect.any(Object));
-
-//     const userId = res.body.id;
-//     const deleteSql = `DELETE FROM user WHERE id = ${userId}`;
-
-//     pool.query(deleteSql);
-//   });
-// });

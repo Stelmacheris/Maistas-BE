@@ -11,10 +11,13 @@ router.post("/register", function (req, res) {
   const { username, email, password, address, city } = req.body;
   const created_at = new Date();
   const schema = new passwordValidator();
-  schema.is().min(6).is().max(16).has().uppercase().has().lowercase();
+  schema.is().min(6).has().uppercase().has().lowercase();
 
   if (!schema.validate(password)) {
-    return res.status(400).json({ message: "Invalid password" });
+    return res.status(400).json({
+      message:
+        "Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter.",
+    });
   }
 
   if (!validator.isEmail(email)) {
@@ -50,7 +53,7 @@ router.post("/register", function (req, res) {
         };
 
         User.create(newUser, function (err, userId) {
-          if (err) return res.status(500).json({ error: err });
+          if (err) return res.status(400).json({ error: err });
 
           User.findById(userId, (err, user) => {
             res.status(201).json({ id: user.id });
@@ -64,18 +67,22 @@ router.post("/register", function (req, res) {
 router.post("/login", function (req, res) {
   const { email, password } = req.body;
 
+  if (!email)
+    return res.status(400).json({ message: "Email field is required" });
+  if (!password)
+    return res.status(400).json({ message: "Password field is required" });
   User.findOne({ email }, function (err, user) {
     if (err)
       return res.status(500).json({ error: "Error finding user by email" });
 
-    if (!user) return res.status(404).json({ error: "Invalid credentials" });
+    if (!user) return res.status(401).json({ error: "Invalid credentials" });
 
     User.comparePasswords(password, user.password, function (err, isMatch) {
       if (err)
         return res.status(500).json({ error: "Error comparing passwords" });
 
       if (!isMatch)
-        return res.status(404).json({ error: "Invalid credentials1" });
+        return res.status(401).json({ error: "Invalid credentials" });
       const token = jwt.sign(
         { id: user.id, type: user.type },
         process.env.JWT_SECRET,
