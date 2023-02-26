@@ -7,6 +7,8 @@ const app = express();
 const port = process.env.PORT || 3000;
 const authRoutes = require("./routes/authRoutes");
 const request = require("supertest");
+const foodAdRoute = require("./routes/foodAdRoute");
+const imageRoute = require("./routes/imageRoute");
 app.use(express.json());
 app.use(
   cors({
@@ -17,9 +19,8 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/", authRoutes);
-app.get("/", (req, res) => {
-  req.json({ message: "Hello world" });
-});
+app.use("/food", foodAdRoute);
+app.use("/image", imageRoute);
 
 const newUser = {
   username: "testuegergser",
