@@ -19,7 +19,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/", authRoutes);
-app.use("/food", foodAdRoute);
+app.use("/food-ad", foodAdRoute);
 app.use("/image", imageRoute);
 
 const newUser = {

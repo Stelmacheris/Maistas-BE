@@ -53,31 +53,6 @@ router.delete("/food_ad/:id", auth, (req, res) => {
   });
 });
 
-// Update image by ID
-// router.put("/:id", (req, res) => {
-//   const { filename, mimetype, size, created_at, food_ad_id } = req.body;
-//   const image = {
-//     id: req.params.id,
-//     filename,
-//     mimetype,
-//     size,
-//     created_at,
-//     food_ad_id,
-//   };
-//   Image.update(image, (err, result) => {
-//     if (err) {
-//       console.log(err);
-//       res.status(500).send("Error updating image in database.");
-//     } else {
-//       if (result.affectedRows === 0) {
-//         res.status(404).send("Image not found.");
-//       } else {
-//         res.send(result);
-//       }
-//     }
-//   });
-// });
-
 // Delete image by ID
 router.delete("/:foodAdId/:id", auth, (req, res) => {
   FoodAd.getById(req.params.foodAdId, function (err, result) {
@@ -116,3 +91,27 @@ router.delete("/:foodAdId/:id", auth, (req, res) => {
 });
 
 module.exports = router;
+// Update image by ID
+// router.put("/:id", (req, res) => {
+//   const { filename, mimetype, size, created_at, food_ad_id } = req.body;
+//   const image = {
+//     id: req.params.id,
+//     filename,
+//     mimetype,
+//     size,
+//     created_at,
+//     food_ad_id,
+//   };
+//   Image.update(image, (err, result) => {
+//     if (err) {
+//       console.log(err);
+//       res.status(500).send("Error updating image in database.");
+//     } else {
+//       if (result.affectedRows === 0) {
+//         res.status(404).send("Image not found.");
+//       } else {
+//         res.send(result);
+//       }
+//     }
+//   });
+// });

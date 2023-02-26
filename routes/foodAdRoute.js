@@ -25,6 +25,18 @@ router.post("/", auth, upload.array("images"), function (req, res, next) {
   const created_at = new Date();
   const updated_at = new Date();
 
+  if (
+    !title ||
+    !description ||
+    !expiration_date ||
+    !created_at ||
+    !updated_at ||
+    !user_id ||
+    !food_type
+  ) {
+    return res.sendStatus(400);
+  }
+
   // Create a new food ad object
   const newFoodAd = {
     title,
@@ -44,7 +56,7 @@ router.post("/", auth, upload.array("images"), function (req, res, next) {
     }
 
     console.log(req.files);
-    req.files.forEach((file) => {
+    req.files?.forEach((file) => {
       const { filename, mimetype, size } = file;
 
       // Create a new image object
@@ -73,10 +85,11 @@ router.post("/", auth, upload.array("images"), function (req, res, next) {
 });
 
 router.get("/", auth, function (req, res) {
-  FoodAd.getAll(function (err, results) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
+  const foodTypes = req.body.foodTypes || null;
+  FoodAd.filterByFoodTypes(function (err, foodAds) {
+    if (err) return next(err);
+    res.json(foodAds);
+  }, foodTypes);
 });
 
 router.get("/:id", auth, function (req, res) {

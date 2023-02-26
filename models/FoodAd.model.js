@@ -102,6 +102,30 @@ const FoodAd = {
       callback(null, result);
     });
   },
+
+  filterByFoodTypes: function (callback, foodTypes) {
+    let query = "SELECT * FROM food_ad";
+
+    if (foodTypes && foodTypes.length > 0) {
+      query += " WHERE food_type IN (?)";
+    }
+
+    db.query(query, [foodTypes], function (err, results) {
+      if (err) return callback(err, null);
+      const foodAds = results.map((foodAd) => {
+        return {
+          id: foodAd.id,
+          title: foodAd.title,
+          description: foodAd.description,
+          price: foodAd.price,
+          foodType: foodAd.food_type,
+          createdAt: foodAd.created_at,
+          updatedAt: foodAd.updated_at,
+        };
+      });
+      callback(null, foodAds);
+    });
+  },
 };
 
 module.exports = FoodAd;
