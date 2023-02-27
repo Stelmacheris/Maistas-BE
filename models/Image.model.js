@@ -40,6 +40,21 @@ const Image = {
     );
   },
 
+  findByFoodAdIdAndId: function ([food_ad_id, id], callback) {
+    db.query(
+      "SELECT * FROM image WHERE food_ad_id = ? AND id = ?",
+      [food_ad_id, id],
+      function (err, results) {
+        if (err) return callback(err, null);
+        if (results.length > 0) {
+          return callback(null, results);
+        } else {
+          return callback(null, null);
+        }
+      }
+    );
+  },
+
   deleteByFoodAdId: function (food_ad_id, callback) {
     db.query(
       "DELETE FROM image WHERE food_ad_id = ?",
