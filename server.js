@@ -10,6 +10,7 @@ const request = require("supertest");
 const foodAdRoute = require("./routes/foodAdRoute");
 const imageRoute = require("./routes/imageRoute");
 const messageRoute = require("./routes/messageRoute");
+const ratingRoute = require("./routes/userRatingRouter");
 app.use(express.json());
 app.use(
   cors({
@@ -23,6 +24,7 @@ app.use("/", authRoutes);
 app.use("/food-ad", foodAdRoute);
 app.use("/food-ad/:foodId/image", imageRoute);
 app.use("/food-ad/:foodId/message", messageRoute);
+app.use("/food-ad/:foodId/rating", ratingRoute);
 
 const newUser = {
   username: "testuegergser",
