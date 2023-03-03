@@ -12,11 +12,7 @@ const imageRoute = require("./routes/imageRoute");
 const messageRoute = require("./routes/messageRoute");
 const ratingRoute = require("./routes/userRatingRouter");
 app.use(express.json());
-app.use(
-  cors({
-    origin: ["*"],
-  })
-);
+app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 

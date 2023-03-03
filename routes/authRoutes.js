@@ -75,14 +75,14 @@ router.post("/login", function (req, res) {
     if (err)
       return res.status(500).json({ error: "Error finding user by email" });
 
-    if (!user) return res.status(401).json({ error: "Invalid credentials" });
+    if (!user) return res.status(400).json({ error: "Invalid credentials" });
 
     User.comparePasswords(password, user.password, function (err, isMatch) {
       if (err)
         return res.status(500).json({ error: "Error comparing passwords" });
 
       if (!isMatch)
-        return res.status(401).json({ error: "Invalid credentials" });
+        return res.status(400).json({ error: "Invalid credentials" });
       const token = jwt.sign(
         { id: user.id, type: user.type },
         process.env.JWT_SECRET,

@@ -84,12 +84,44 @@ router.post("/", auth, upload.array("images"), function (req, res, next) {
   });
 });
 
-router.get("/", auth, function (req, res) {
-  const foodTypes = req.body.foodTypes || null;
-  FoodAd.filterByFoodTypes(function (err, foodAds) {
-    if (err) return next(err);
-    res.json(foodAds);
-  }, foodTypes);
+router.get("/", auth, function (req, res, next) {
+  const foodTypes = req.query.foodTypes ? req.query.foodTypes.split(",") : null;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  FoodAd.filterByFoodTypes(
+    function (err, foodAds) {
+      if (err) return next(err);
+
+      // Count the total number of rows
+      const totalCount = foodAds.length;
+
+      // Calculate the total number of pages
+      const totalPages = Math.ceil(totalCount / limit);
+
+      // Create a pagination object
+      const pagination = {
+        currentPage: page,
+        totalPages: totalPages,
+        totalCount: totalCount,
+        limit: limit,
+      };
+
+      // Get the current page's rows
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const currentRows = foodAds.slice(startIndex, endIndex);
+
+      // Send the response
+      res.json({
+        pagination: pagination,
+        data: currentRows,
+      });
+    },
+    foodTypes,
+    page,
+    limit
+  );
 });
 
 router.get("/:id", auth, function (req, res) {
