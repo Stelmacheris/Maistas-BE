@@ -84,7 +84,7 @@ router.post("/", auth, upload.array("images"), function (req, res, next) {
   });
 });
 
-router.get("/", auth, function (req, res, next) {
+router.get("/", function (req, res, next) {
   const foodTypes = req.query.foodTypes ? req.query.foodTypes.split(",") : null;
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;

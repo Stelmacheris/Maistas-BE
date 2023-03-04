@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
-
+app.use(express.static("uploads"));
 app.use("/", authRoutes);
 app.use("/food-ad", foodAdRoute);
 app.use("/food-ad/:foodId/image", imageRoute);
