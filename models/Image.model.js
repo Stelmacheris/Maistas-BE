@@ -66,11 +66,15 @@ const Image = {
     );
   },
 
-  deleteById: function (id, callback) {
-    db.query("DELETE FROM image WHERE id = ?", [id], function (err, result) {
-      if (err) return callback(err, null);
-      callback(null, result);
-    });
+  deleteByfilename: function (filename, callback) {
+    db.query(
+      "DELETE FROM image WHERE filename = ?",
+      [filename],
+      function (err, result) {
+        if (err) return callback(err, null);
+        callback(null, result);
+      }
+    );
   },
 };
 
