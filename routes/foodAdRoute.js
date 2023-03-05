@@ -34,7 +34,7 @@ router.post("/", auth, upload.array("images"), function (req, res, next) {
     !user_id ||
     !food_type
   ) {
-    return res.sendStatus(400);
+    return res.json("bad credentials");
   }
 
   // Create a new food ad object
@@ -124,6 +124,13 @@ router.get("/", function (req, res, next) {
   );
 });
 
+router.get("/mine", auth, (req, res) => {
+  FoodAd.filterByUser(req.user.id, (err, results) => {
+    if (err) return res.sendStatus(500);
+    return res.json(results);
+  });
+});
+
 router.get("/:id", auth, function (req, res) {
   const id = req.params.id;
   FoodAd.getById(id, function (err, result) {
@@ -133,22 +140,52 @@ router.get("/:id", auth, function (req, res) {
   });
 });
 
-router.put("/:id", auth, function (req, res) {
-  const id = req.params.id;
-  const updatedFoodAd = req.body;
+router.put("/:id", auth, upload.single("image"), function (req, res) {
+  const { id } = req.params;
+  const { filename, mimetype, size } = req.file;
 
-  FoodAd.getById(id, function (err, result) {
-    if (err) return res.status(500).json({ error: err.message });
-    if (!result) return res.status(404).json({ error: "Food ad not found" });
-    if (result.user_id !== req.user.id) return res.sendStatus(403);
-    else {
-      FoodAd.update(id, updatedFoodAd, function (err, result) {
-        if (err) return res.status(500).json({ error: err.message });
-        if (!result.affectedRows)
-          return res.status(404).json({ error: "Food ad not found" });
-        res.json({ message: "Food ad updated successfully" });
-      });
+  FoodAd.getById(id, function (err, foodAd) {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ success: false, message: err.message });
     }
+
+    if (!foodAd) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Food ad not found" });
+    }
+
+    // Create a new image object
+    const newImage = {
+      filename,
+      mimetype,
+      size,
+      created_at: new Date(),
+      food_ad_id: foodAd.id,
+    };
+
+    // Call the create method on the image model with a callback function
+    Image.create(newImage, function (err, imageId) {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, message: err.message });
+      }
+      console.log(`Image ${imageId} created for food ad ${foodAd._id}`);
+
+      // Update the food ad with the new image id
+      foodAd.image_ids = [imageId];
+
+      foodAd.save(function (err) {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({ success: false, message: err.message });
+        }
+        return res
+          .status(200)
+          .json({ success: true, message: "Food ad updated successfully" });
+      });
+    });
   });
 });
 

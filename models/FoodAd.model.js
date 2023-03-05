@@ -51,6 +51,21 @@ const FoodAd = {
     );
   },
 
+  filterByUser: function (id, callback) {
+    db.query(
+      "SELECT food_ad.id, title,description,expiration_date,food_type,image.filename FROM food_ad INNER JOIN image ON food_ad.id=image.food_ad_id WHERE user_id=?",
+      [id],
+      function (err, results) {
+        if (err) return callback(err, null);
+        if (results.length > 0) {
+          return callback(null, results);
+        } else {
+          return callback(null, null);
+        }
+      }
+    );
+  },
+
   update: function (id, newInfo, callback) {
     // get the food ad's existing information
     db.query(
