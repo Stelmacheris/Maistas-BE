@@ -21,6 +21,7 @@ router.post("/", auth, (req, res) => {
       content,
       userId: req.user.id,
       foodAdId,
+      created_at: new Date(),
     };
     Comment.create(newComment, (err, result) => {
       if (err) return res.sendStatus(500);

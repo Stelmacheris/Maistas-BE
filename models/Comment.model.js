@@ -15,7 +15,7 @@ const Comment = {
 
   getByFoodAd: function (foodId, callback) {
     db.query(
-      "SELECT * FROM comment WHERE food_ad_id=?",
+      "SELECT comment.id, comment.user_id, content,user.username, comment.created_at FROM comment INNER JOIN user ON comment.user_id = user.id WHERE food_ad_id=?",
       [foodId],
       (err, comments) => {
         if (err) return callback(null, null);
