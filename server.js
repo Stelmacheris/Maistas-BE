@@ -10,6 +10,7 @@ const imageRoute = require("./routes/imageRoute");
 const messageRoute = require("./routes/messageRoute");
 const ratingRoute = require("./routes/userRatingRouter");
 const commentRoute = require("./routes/commentRoute");
+const reportRoute = require("./routes/reportRoutes");
 
 app.use(express.json());
 app.use(cors({ origin: true, credentials: true }));
@@ -23,6 +24,7 @@ app.use("/food-ad/:foodId/image", imageRoute);
 app.use("/food-ad/:foodId/message", messageRoute);
 app.use("/food-ad/:foodId/rating", ratingRoute);
 app.use("/food-ad/:foodId/comment", commentRoute);
+app.use("/food-ad/:foodId/report", reportRoute);
 
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
