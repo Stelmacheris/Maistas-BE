@@ -4,6 +4,8 @@ const multer = require("multer");
 const auth = require("../verify/verify");
 const FoodAd = require("../models/FoodAd.model");
 const Image = require("../models/image.model");
+const Notification = require("../models/Notification.model");
+const sendEmail = require("../common/email");
 
 // Set up multer storage for image uploads
 const storage = multer.diskStorage({
@@ -78,9 +80,24 @@ router.post("/", auth, upload.array("images"), function (req, res, next) {
       });
     });
 
-    return res
-      .status(201)
-      .json({ success: true, message: "Food ad created successfully" });
+    Notification.findAll((err, results) => {
+      // const subscribe = results.findAll(
+      //   (item) => item.food_type === newFoodAd.food_type
+      // );
+
+      const subscription = results.filter(
+        (item) => item.food_type === newFoodAd.food_type
+      );
+
+      subscription.forEach((item) => {
+        sendEmail(
+          item.email,
+          `Maisto tipe: ${item.food_type}, įdėtas naujas skelbimas`,
+          `Naujas skelbimas ${item.food_type} skyriuje`
+        );
+      });
+    });
+    return res.status(201).json({ foodAdId });
   });
 });
 
